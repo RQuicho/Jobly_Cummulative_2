@@ -49,15 +49,46 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
-    const companiesRes = await db.query(
-          `SELECT handle,
-                  name,
-                  description,
-                  num_employees AS "numEmployees",
-                  logo_url AS "logoUrl"
-           FROM companies
-           ORDER BY name`);
+  static async findAll(filters = {}) {
+    let query = 
+      `SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url AS "logoUrl"
+      FROM companies`;
+
+    let queryValues = [];
+    let whereExpressions = [];
+
+    const {name, minEmployees, maxEmployees} = filters;
+
+    if (name) {
+      queryValues.push(`%${name}%`); // anything before and after name
+      whereExpressions.push(`name ILIKE $${queryValues.length}`);
+    }
+    
+    if (minEmployees > maxEmployees) {
+      throw new BadRequestError("Min employees must be less than max employees");
+    }
+
+    if (minEmployees) {
+      queryValues.push(minEmployees);
+      whereExpressions.push(`num_employees >= $${queryValues.length}`);
+    }
+
+    if (maxEmployees) {
+      queryValues.push(maxEmployees);
+      whereExpressions.push(`num_employees <= $${queryValues.length}`);
+    }
+
+    if (whereExpressions.length > 0) {
+      query += "WHERE" + whereExpressions.join(" AND ");
+    }
+
+    query += "ORDER BY name";
+    
+    const companiesRes = await db.query(query, queryValues);
     return companiesRes.rows;
   }
 
