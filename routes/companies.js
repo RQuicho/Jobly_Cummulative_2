@@ -63,7 +63,7 @@ router.get("/", async function (req, res, next) {
   }
 
   try {
-    const validator = jsonschema.validate(q, companyFilterShcema);
+    const validator = jsonschema.validate(q, companyFilterShcema); // PLEASE NOTE: Creating your own schema using jsonschema.net uses a version that is not supported by javascript as of 09/13/2023. This schema was taken from the solution.
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
       throw new BadRequestError(errs);
