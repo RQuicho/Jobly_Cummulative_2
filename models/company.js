@@ -65,7 +65,7 @@ class Company {
 
     if (name) {
       queryValues.push(`%${name}%`); // anything before and after name
-      whereExpressions.push(`name ILIKE $${queryValues.length}`);
+      whereExpressions.push(`name ILIKE $${queryValues.length}`); // ILIKE is case insensitive
     }
     
     if (minEmployees > maxEmployees) {
@@ -83,10 +83,10 @@ class Company {
     }
 
     if (whereExpressions.length > 0) {
-      query += "WHERE" + whereExpressions.join(" AND ");
+      query += " WHERE " + whereExpressions.join(" AND ");
     }
 
-    query += "ORDER BY name";
+    query += " ORDER BY name";
     
     const companiesRes = await db.query(query, queryValues);
     return companiesRes.rows;
