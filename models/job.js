@@ -106,7 +106,7 @@ class Job {
                     title,
                     salary,
                     equity,
-                    company_handle AS "companyHandle
+                    company_handle AS "companyHandle"
             FROM jobs
             WHERE id = $1`,
             [id]);

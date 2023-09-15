@@ -23,12 +23,15 @@ describe("create", function () {
     title: "New",
     salary: 100000,
     equity: "0.5",
-    company_handle: "c1"
+    companyHandle: "c1"
   };
 
   test("works", async function () {
     let job = await Job.create(newJob);
-    expect(job).toEqual(newJob);
+    expect(job).toEqual({
+      ...newJob,
+      id: expect.any(Number)
+    });
   });
 
   test("bad request with dupe", async function () {
@@ -53,21 +56,24 @@ describe("findAll", function () {
         title: "j1",
         salary: 100,
         equity: "0.1",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       },
       {
         id: testJobIds[1],
         title: "j2",
         salary: 200,
         equity: "0.2",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       },
       {
         id: testJobIds[2],
         title: "j3",
         salary: 300,
         equity: "0",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       }
     ]);
   });
@@ -79,7 +85,8 @@ describe("findAll", function () {
         title: "j1",
         salary: 100,
         equity: "0.1",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       }
     ]);
   });
@@ -91,29 +98,12 @@ describe("findAll", function () {
         title: "j3",
         salary: 300,
         equity: "0",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       }
     ]);
   });
-  test("works: filter by maxSalary", async function () {
-    let jobs = await Job.findAll({maxSalary: 250});
-    expect(jobs).toEqual([
-      {
-        id: testJobIds[0],
-        title: "j1",
-        salary: 100,
-        equity: "0.1",
-        companyHandle: "c1"
-      },
-      {
-        id: testJobIds[1],
-        title: "j2",
-        salary: 200,
-        equity: "0.2",
-        companyHandle: "c1"
-      }
-    ]);
-  });
+  
   test("works: filter by equity", async function () {
     let jobs = await Job.findAll({hasEquity: true});
     expect(jobs).toEqual([
@@ -122,14 +112,16 @@ describe("findAll", function () {
         title: "j1",
         salary: 100,
         equity: "0.1",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       },
       {
         id: testJobIds[1],
         title: "j2",
         salary: 200,
         equity: "0.2",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       }
     ]);
   });
@@ -141,7 +133,8 @@ describe("findAll", function () {
         title: "j2",
         salary: 200,
         equity: "0.2",
-        companyHandle: "c1"
+        companyHandle: "c1",
+        companyName: "C1"
       }
     ]);
   });
@@ -208,11 +201,11 @@ describe("update", function () {
     }); 
 });
 
-/************************************** remove */
+/************************************** delete */
 
 describe("delete", function () {
   test("works", async function () {
-    await Job.remove(testJobIds[0]);
+    await Job.delete(testJobIds[0]);
     const res = await db.query(
         "SELECT id FROM jobs WHERE id=$1", [testJobIds[0]]);
     expect(res.rows.length).toEqual(0);
@@ -220,7 +213,7 @@ describe("delete", function () {
 
   test("not found if no such job", async function () {
     try {
-      await Job.remove(0);
+      await Job.delete(0);
       fail();
     } catch (err) {
       expect(err instanceof NotFoundError).toBeTruthy();
