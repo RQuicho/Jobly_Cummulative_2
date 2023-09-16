@@ -163,6 +163,26 @@ describe("GET /companies/:handle", function () {
         description: "Desc1",
         numEmployees: 1,
         logoUrl: "http://c1.img",
+        jobs: [
+          {
+            id: expect.any(Number),
+            title: 'j1',
+            salary: 100,
+            equity: '0.1'
+          },
+          {
+            id: expect.any(Number),
+            title: 'j2',
+            salary: 200,
+            equity: '0.2'
+          },
+          {
+            id: expect.any(Number),
+            title: 'j3',
+            salary: 300,
+            equity: '0'
+          }
+        ]
       },
     });
   });
@@ -176,6 +196,7 @@ describe("GET /companies/:handle", function () {
         description: "Desc2",
         numEmployees: 2,
         logoUrl: "http://c2.img",
+        jobs: []
       },
     });
   });
